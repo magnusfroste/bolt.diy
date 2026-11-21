@@ -7,6 +7,9 @@ interface Env {
   HuggingFace_API_KEY: string;
   OPEN_ROUTER_API_KEY: string;
   OLLAMA_API_BASE_URL: string;
+  GARAGEAI_API_KEY: string;
+  GARAGEAI_API_BASE_URL: string;
+  SHIPHOLM_API_URL: string;
   OPENAI_LIKE_API_KEY: string;
   OPENAI_LIKE_API_BASE_URL: string;
   OPENAI_LIKE_API_MODELS: string;

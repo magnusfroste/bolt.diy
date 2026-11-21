@@ -87,3 +87,23 @@ ENV VITE_LOG_LEVEL=${VITE_LOG_LEVEL} \
 
 RUN mkdir -p /app/run
 CMD ["pnpm", "run", "dev", "--host"]
+
+
+# ---- Node server (Shipholm and any plain container host) ----
+# The last stage, so a plain `docker build .` – which is what Shipholm's build service runs –
+# produces it. Runs the Worker build on Node (server.mjs) as a non-root user and writes nothing
+# to disk, so it works on a read-only root filesystem. API keys come from the environment.
+FROM build AS prod-deps
+RUN pnpm prune --prod --ignore-scripts
+
+FROM node:22.23.5-bookworm-slim AS node-server
+WORKDIR /app
+ENV NODE_ENV=production \
+    PORT=8080 \
+    HOST=0.0.0.0
+COPY --from=prod-deps /app/node_modules ./node_modules
+COPY --from=build /app/build ./build
+COPY --from=build /app/package.json /app/server.mjs /app/shipholm.mjs ./
+USER 10001:10001
+EXPOSE 8080
+CMD ["node", "server.mjs"]

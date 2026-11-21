@@ -7,7 +7,7 @@ import { getAll, openDatabase } from '~/lib/persistence/db';
 import type { MCPConfig } from '~/lib/services/mcpService';
 import { useMCPStore } from '~/lib/stores/mcp';
 import { DEFAULT_AVATARS, DEFAULT_AVATAR, updateProfile } from '~/lib/stores/profile';
-import { providersStore, updateProviderSettings } from '~/lib/stores/settings';
+import { providersStore, SERVER_KEYED_PROVIDER, updateProviderSettings } from '~/lib/stores/settings';
 import { setTheme, themeStore } from '~/lib/stores/theme';
 import { THEMES, type Theme } from '~/types/theme';
 import { PROVIDER_LIST } from '~/utils/constants';
@@ -136,11 +136,14 @@ export function FirstRunOnboarding() {
     /*
      * Onboarding is an explicit provider selection step. Start with every
      * provider disabled and enable only the selected provider when a key was
-     * supplied. Users can enable additional providers later in Settings.
+     * supplied – plus the server-keyed default, which needs no key of the
+     * user's own. Users can enable additional providers later in Settings.
      */
     const currentProviders = providersStore.get();
     Object.keys(currentProviders).forEach((name) => {
-      updateProviderSettings(name, { enabled: name === providerName && Boolean(apiKey.trim()) });
+      updateProviderSettings(name, {
+        enabled: name === SERVER_KEYED_PROVIDER || (name === providerName && Boolean(apiKey.trim())),
+      });
     });
 
     const providerSettings = providersStore.get();
@@ -328,8 +331,8 @@ export function FirstRunOnboarding() {
         {step === 1 && (
           <div className="space-y-3">
             <p className="text-sm text-[#a09baa]">
-              Choose a provider and add its API key to start building. You can skip this and enable providers later in
-              Settings, then add their keys from the prompt box.
+              GarageAI is ready to use – no key needed. To use another provider as well, choose it and add its API key
+              here, or later in Settings.
             </p>
             <label className="block text-sm font-medium" htmlFor="onboarding-provider">
               AI provider

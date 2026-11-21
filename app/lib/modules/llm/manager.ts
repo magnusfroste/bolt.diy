@@ -12,6 +12,7 @@ const logger = createScopedLogger('LLMManager');
  * unregistered, so its models never reach the model picker.
  */
 const ENABLED_PROVIDERS = new Set([
+  'GarageAI',
   'OpenRouter',
   'Anthropic',
   'OpenAI',
@@ -266,14 +267,16 @@ export class LLMManager {
 
   getDefaultProvider(): BaseProvider {
     /*
-     * Prefer OpenRouter explicitly. Registration order follows the export
-     * order of ./registry, which would otherwise make the default depend on
-     * which provider happens to be listed first.
+     * Prefer GarageAI (this fork's default, see providers/garageai.ts), then OpenRouter.
+     * Registration order follows the export order of ./registry, which would otherwise make
+     * the default depend on which provider happens to be listed first.
      */
-    const openRouter = this._providers.get('OpenRouter');
+    for (const name of ['GarageAI', 'OpenRouter']) {
+      const preferred = this._providers.get(name);
 
-    if (openRouter) {
-      return openRouter;
+      if (preferred) {
+        return preferred;
+      }
     }
 
     const firstProvider = this._providers.values().next().value;
