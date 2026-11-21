@@ -53,7 +53,7 @@ describe('LLMManager', () => {
     const manager = LLMManager.getInstance({});
     const names = manager.getAllProviders().map((p) => p.name);
 
-    // All 22 providers should now be registered
+    // All 23 providers should now be registered (22 upstream + GarageAI)
     expect(names.sort()).toEqual([
       'AmazonBedrock',
       'Anthropic',
@@ -61,6 +61,7 @@ describe('LLMManager', () => {
       'Cohere',
       'Deepseek',
       'Fireworks',
+      'GarageAI',
       'Github',
       'Google',
       'Groq',
@@ -80,7 +81,7 @@ describe('LLMManager', () => {
     ]);
   });
 
-  it('registers all 22 providers including newly restored ones', () => {
+  it('registers all 23 providers including newly restored ones', () => {
     const manager = LLMManager.getInstance({});
     const names = manager.getAllProviders().map((p) => p.name);
 
@@ -91,7 +92,7 @@ describe('LLMManager', () => {
     expect(names).toContain('HuggingFace');
     expect(names).toContain('Cohere');
     expect(names).toContain('Mistral');
-    expect(names.length).toBe(22);
+    expect(names.length).toBe(23);
   });
 
   it('exposes each enabled provider via getProvider', () => {
@@ -102,9 +103,9 @@ describe('LLMManager', () => {
     }
   });
 
-  it('defaults to OpenRouter regardless of registration order', () => {
+  it('defaults to GarageAI regardless of registration order', () => {
     const manager = LLMManager.getInstance({});
-    expect(manager.getDefaultProvider().name).toBe('OpenRouter');
+    expect(manager.getDefaultProvider().name).toBe('GarageAI');
   });
 
   it('getProvider returns the registered provider', () => {

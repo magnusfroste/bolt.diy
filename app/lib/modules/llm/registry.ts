@@ -4,6 +4,7 @@ import CerebrasProvider from './providers/cerebras';
 import CohereProvider from './providers/cohere';
 import DeepseekProvider from './providers/deepseek';
 import FireworksProvider from './providers/fireworks';
+import GarageAIProvider from './providers/garageai';
 import GithubProvider from './providers/github';
 import GoogleProvider from './providers/google';
 import GroqProvider from './providers/groq';
@@ -22,6 +23,7 @@ import XAIProvider from './providers/xai';
 import ZaiProvider from './providers/z-ai';
 
 export {
+  GarageAIProvider,
   AnthropicProvider,
   CerebrasProvider,
   CohereProvider,
