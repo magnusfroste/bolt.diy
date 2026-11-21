@@ -9,6 +9,8 @@
  * Unlike `vite preview` it loads no Vite config and writes nothing to disk, so it runs as a
  * non-root user on a read-only filesystem.
  *
+ * Shipholm sign-in and deploys: see shipholm.mjs.
+ *
  * Client IP (rate limits): the worker trusts `cf-connecting-ip`. Any such header from the client is
  * dropped and replaced with the socket address, or – behind a proxy that overwrites it, such as
  * Traefik on Shipholm – with the header named in CLIENT_IP_HEADER (e.g. x-real-ip).
@@ -19,10 +21,12 @@ import { createServer } from 'node:http';
 import { extname, join, normalize, sep } from 'node:path';
 import { Readable } from 'node:stream';
 import { fileURLToPath } from 'node:url';
+import { createShipholm } from './shipholm.mjs';
 
 const root = fileURLToPath(new URL('./build/', import.meta.url));
 const clientDir = join(root, 'client');
 const { default: worker } = await import(new URL('./build/server/index.js', import.meta.url));
+const shipholm = createShipholm(process.env);
 
 const port = Number(process.env.PORT || 5173);
 const clientIpHeader = (process.env.CLIENT_IP_HEADER || '').toLowerCase();
@@ -173,7 +177,10 @@ createServer(async (req, res) => {
       }
     }
 
-    await send(res, await worker.fetch(toRequest(req), process.env, ctx));
+    const request = toRequest(req);
+    const answer = await shipholm.handle(request);
+
+    await send(res, answer || (await worker.fetch(request, process.env, ctx)));
   } catch (error) {
     console.error(error);
 

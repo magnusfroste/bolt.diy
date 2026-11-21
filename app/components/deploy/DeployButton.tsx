@@ -8,6 +8,7 @@ import { GitHubDeploymentDialog } from '~/components/deploy/GitHubDeploymentDial
 import { useGitLabDeploy } from '~/components/deploy/GitLabDeploy.client';
 import { GitLabDeploymentDialog } from '~/components/deploy/GitLabDeploymentDialog';
 import { useNetlifyDeploy } from '~/components/deploy/NetlifyDeploy.client';
+import { ShipholmDeployDialog } from '~/components/deploy/ShipholmDeployDialog.client';
 import { useVercelDeploy } from '~/components/deploy/VercelDeploy.client';
 import { isGitLabConnected } from '~/lib/stores/gitlabConnection';
 import { netlifyConnection } from '~/lib/stores/netlify';
@@ -47,6 +48,7 @@ export const DeployButton = ({
   const [githubDeploymentFiles, setGithubDeploymentFiles] = useState<Record<string, string> | null>(null);
   const [gitlabDeploymentFiles, setGitlabDeploymentFiles] = useState<Record<string, string> | null>(null);
   const [githubProjectName, setGithubProjectName] = useState('');
+  const [showShipholmDialog, setShowShipholmDialog] = useState(false);
   const [gitlabProjectName, setGitlabProjectName] = useState('');
 
   const handleVercelDeployClick = async () => {
@@ -152,6 +154,20 @@ export const DeployButton = ({
               className={classNames(
                 'cursor-pointer flex items-center w-full px-4 py-2 text-sm text-bolt-elements-textPrimary hover:bg-bolt-elements-item-backgroundActive gap-2 rounded-md group relative',
                 {
+                  'opacity-60 cursor-not-allowed': isDeploying || !activePreview,
+                },
+              )}
+              disabled={isDeploying || !activePreview}
+              onClick={() => setShowShipholmDialog(true)}
+            >
+              <span className="i-ph:anchor-simple-bold w-5 h-5 text-accent-500" />
+              <span className="mx-auto">Deploy to Shipholm</span>
+            </DropdownMenu.Item>
+
+            <DropdownMenu.Item
+              className={classNames(
+                'cursor-pointer flex items-center w-full px-4 py-2 text-sm text-bolt-elements-textPrimary hover:bg-bolt-elements-item-backgroundActive gap-2 rounded-md group relative',
+                {
                   'opacity-60 cursor-not-allowed': isDeploying || !activePreview || !netlifyConn.user,
                 },
               )}
@@ -252,6 +268,8 @@ export const DeployButton = ({
           </DropdownMenu.Content>
         </DropdownMenu.Root>
       </div>
+
+      <ShipholmDeployDialog isOpen={showShipholmDialog} onClose={() => setShowShipholmDialog(false)} />
 
       {/* GitHub Deployment Dialog */}
       {showGitHubDeploymentDialog && githubDeploymentFiles && (

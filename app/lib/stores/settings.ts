@@ -54,6 +54,9 @@ export const shortcutsStore = map<Shortcuts>({
 const PROVIDER_SETTINGS_KEY = 'provider_settings';
 const AUTO_ENABLED_KEY = 'auto_enabled_providers';
 
+// The default provider of this build; its key is on the server (GARAGEAI_API_KEY).
+export const SERVER_KEYED_PROVIDER = 'GarageAI';
+
 // Add this helper function at the top of the file
 const isBrowser = typeof window !== 'undefined';
 
@@ -88,13 +91,14 @@ const getInitialProviderSettings = (): ProviderSetting => {
 
   /*
    * Providers remain disabled until the user chooses one during onboarding or
-   * enables it in Settings.
+   * enables it in Settings – except the server-keyed default (GarageAI), which
+   * works without a key of the user's own.
    */
   PROVIDER_LIST.forEach((provider) => {
     initialSettings[provider.name] = {
       ...provider,
       settings: {
-        enabled: false,
+        enabled: provider.name === SERVER_KEYED_PROVIDER,
       },
     };
   });

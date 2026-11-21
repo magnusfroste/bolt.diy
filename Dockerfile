@@ -103,7 +103,7 @@ ENV NODE_ENV=production \
     HOST=0.0.0.0
 COPY --from=prod-deps /app/node_modules ./node_modules
 COPY --from=build /app/build ./build
-COPY --from=build /app/package.json /app/server.mjs ./
+COPY --from=build /app/package.json /app/server.mjs /app/shipholm.mjs ./
 USER 10001:10001
 EXPOSE 8080
 CMD ["node", "server.mjs"]
